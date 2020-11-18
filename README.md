@@ -68,3 +68,11 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `yarn build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+1. **Home Page**
+   - Search movies by typing in the search bar and hit enter, then fetched data will be showed and stored into redux.
+   - Add or remove favourite movies by clicking **Love Icon**. Favourited movies will be stored in localStorage to keep it available when the page get refreshed.
+  
+2. **Favourite Page**
+   - List of favourited movies
+   - Remove favourited movies
