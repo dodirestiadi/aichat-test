@@ -17,7 +17,6 @@ import { FaSearch, FaTimes } from "react-icons/fa";
 
 // Reducer
 import { addMovies } from '../store/actions/moviesAction';
-import { addFavourite, removeFavourite } from '../store/actions/favouritesAction';
 
 // Components
 import MainLayout from '../layout/MainLayout';
@@ -27,15 +26,17 @@ import MovieDetail from '../components/MovieDetail';
 import MyModal from '../components/MyModal';
 import Box from '../styled/StyledBox';
 
+import useStateWithLocalStorage from '../components/hooks/useLocalStorage';
+
 function Home() {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSearchFocus, setSearchFocus] = useState(false);
   const [movieDetail, setMovieDetail] = useState({});
+  const [favourites, setFavourites] = useStateWithLocalStorage('favourites', []);
 
   const storeMovies = useSelector(state => state.moviesReducer);
-  const storeFavourites = useSelector(state => state.favouritesReducer);
   const dispatch = useDispatch();
 
   const getMovies = async (searchKeyword) => {
@@ -68,12 +69,14 @@ function Home() {
   };
 
   const handleToggleFavourite = (action, imdbID) => {
-    let favouritesStorage = localStorage.getItem('favouritesMovie');
     if (action === 'ADD') {
       const item = storeMovies.data.find(item => item.imdbID === imdbID);
-      dispatch(addFavourite(item));
+      const tempFavourites = JSON.parse(favourites);
+      tempFavourites.push(item);
+      setFavourites(JSON.stringify(tempFavourites));
     } else {
-      dispatch(removeFavourite(imdbID));
+      const newFavourites = JSON.parse(favourites).filter(item => item.imdbID !== imdbID);
+      setFavourites(JSON.stringify(newFavourites));
     }
   }
 
@@ -82,7 +85,7 @@ function Home() {
   };
 
   const isFavourite = (imdbID) => {
-    return storeFavourites.data.some(item => item.imdbID === imdbID)
+    return JSON.parse(favourites).some(item => item.imdbID === imdbID)
   };
 
   const renderIconSearch = () => {

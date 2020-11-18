@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useSelector, useDispatch } from 'react-redux';
 
 // Bootstrap
 import { Col, Row } from 'reactstrap';
-
-// Reducers
-import { removeFavourite } from '../store/actions/favouritesAction';
 
 // Components
 import MainLayout from '../layout/MainLayout';
@@ -15,12 +11,12 @@ import MovieCard from '../components/MovieCard';
 import MovieDetail from '../components/MovieDetail';
 import MyModal from '../components/MyModal';
 
+import useStateWithLocalStorage from '../components/hooks/useLocalStorage';
+
 function Favourite() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [movieDetail, setMovieDetail] = useState({});
-
-  const storeFavourites = useSelector(state => state.favouritesReducer);
-  const dispatch = useDispatch();
+  const [favourites, setFavourites] = useStateWithLocalStorage('favourites', []);
 
   const handleGetMovieDetail = async (imdbID) => {
     handleToggleModal();
@@ -28,14 +24,18 @@ function Favourite() {
     setMovieDetail(response.data);
   }
 
-  const handleRemoveFavourite = (imdbID) => dispatch(removeFavourite(imdbID));
+  const handleRemoveFavourite = (imdbID) => {
+    const newFavourites = JSON.parse(favourites).filter(item => item.imdbID !== imdbID);
+    setFavourites(JSON.stringify(newFavourites));
+  };
+
   const handleToggleModal = () => setIsModalOpen(!isModalOpen);
 
   return (
     <MainLayout>
-      {storeFavourites.data.length && (
+      {JSON.parse(favourites).length && (
         <Row>
-          {storeFavourites.data.map((item, idx) => (
+          {JSON.parse(favourites).map((item, idx) => (
             <Col key={idx} md="4" className="mb-4">
               <MovieCard
                 banner={item.Poster}
